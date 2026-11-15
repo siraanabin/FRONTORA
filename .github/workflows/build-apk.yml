@@ -1,0 +1,54 @@
+name: Android APK Build
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: '3.35.7'
+          cache: true
+
+      - name: Extract Flutter source package
+        run: |
+          unzip -q Frontora_2.0_Flutter_Source.zip -d source
+          cp -R source/Frontora_2.0_Flutter/. .
+
+      - name: Generate Android platform scaffolding
+        run: flutter create . --platforms=android
+
+      - name: Resolve dependencies
+        run: flutter pub get
+
+      - name: Analyze Dart source
+        run: flutter analyze --no-fatal-infos
+
+      - name: Build release APK
+        run: flutter build apk --release
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: FRONTORA-2.0-Android-APK
+          path: build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
+          retention-days: 14
