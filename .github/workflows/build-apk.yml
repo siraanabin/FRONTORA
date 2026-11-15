@@ -36,6 +36,9 @@ jobs:
       - name: Generate Android platform scaffolding
         run: flutter create . --platforms=android
 
+      - name: Remove generated sample test
+        run: rm -f test/widget_test.dart
+
       - name: Resolve dependencies
         run: flutter pub get
 
