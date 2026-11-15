@@ -39,6 +39,9 @@ jobs:
       - name: Remove generated sample test
         run: rm -f test/widget_test.dart
 
+      - name: Pin compatible archive dependency
+        run: flutter pub add archive:^4.7.1
+
       - name: Resolve dependencies
         run: flutter pub get
 
